@@ -30,30 +30,3 @@ docker run --rm ratelimiter-demo
 
 dotnet run --project RateLimiter.Demo
 
-Why Sliding Window?
-This implementation uses the sliding window algorithm instead of a fixed (absolute) window.
-
-Sliding Window — Pros:
-Enforces rate limits more accurately over time
-
-Prevents bursting right before/after a time boundary
-
-Ensures fairness between fast and slow clients
-
-Used by many real-world APIs (e.g. GitHub, Stripe)
-
-Sliding Window — Cons:
-Requires storing a queue of recent timestamps
-
-Slightly more complex to implement and maintain
-
-Can use more memory if the time window is large
-
-Compared to Fixed Window:
-Fixed window resets limits at exact intervals (e.g. every 10 seconds or every minute):
-
-Easier to implement
-
-But allows bursts at window edges (e.g., 10 calls at 11:59:59, 10 more at 12:00:00)
-
-That’s why sliding window was chosen — it provides smoother and more predictable throttling.

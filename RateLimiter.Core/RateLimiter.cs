@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace RateLimiter.Core
 {
@@ -25,11 +28,11 @@ namespace RateLimiter.Core
 
         public async Task<TResult> PerformAsync(TArg argument)
         {
-            await _semaphore.WaitAsync(); // Get access to the coffee shop, only one person at a time. Only one customer (thread) can talk to the barista at a time. Wait your turn.
+            await _semaphore.WaitAsync(); // get access to the coffee shop, only one person at a time. Only one customer (thread) can talk to the barista at a time. Wait your turn.
             try
             {
-                // Wait politely before ordering coffee
-                //If you’ve had too many coffees recently, you wait before ordering. But you don’t freeze the entire shop — you wait asynchronously.
+                // wait politely before ordering coffee
+                // if you’ve had too many coffees recently, you wait before ordering but you don’t freeze the entire shop — you wait asynchronously
                 TimeSpan timeToWait = GetMaxWaitTime();
 
                 if (timeToWait > TimeSpan.Zero)
@@ -37,13 +40,13 @@ namespace RateLimiter.Core
                     await Task.Delay(timeToWait); 
                 }
 
-                // Log your new coffee time
+                // log your new coffee time
                 foreach (var rateLimit in _rateLimits)
                 {
                     rateLimit.RecordExecution(); 
                 }
 
-                // Execute the function (Actually get the coffee)
+                // execute the function (Actually get the coffee)
                 return await _function(argument);
             }
             finally
@@ -61,11 +64,11 @@ namespace RateLimiter.Core
                 TimeSpan waitTime = rateLimit.GetTimeToWait();
                 if (waitTime > maxWaitTime)
                 {
-                    maxWaitTime = waitTime;
+                    maxWaitTime = waitTime; //if the wait time for this rule is longer than the longest wait time so far, update it. always use the longest wait time across all rules.
                 }
             }
 
-            return maxWaitTime;
+            return maxWaitTime; //if any rule says "Wait 5 minutes," even if others say "Wait 10 seconds," the customer waits 5 minutes.
         }
     }
 }
