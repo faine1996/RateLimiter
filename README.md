@@ -4,7 +4,7 @@ A custom, thread-safe rate limiter implemented in C# using the **sliding window*
 
 ---
 
-## 📦 Project Overview
+## Project Overview
 
 This rate limiter:
 - Accepts a user-provided function (e.g., an API call).
@@ -16,9 +16,9 @@ This rate limiter:
 
 ## Getting Started
 
-### 🐳 Run with Docker (Recommended)
+### Run with Docker (Recommended)
 
-> ✅ Requires Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+> Requires Docker Desktop (Windows/macOS) or Docker Engine (Linux)
 
 ```bash
 git clone https://github.com/faine1996/RateLimiter.git
