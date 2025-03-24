@@ -14,7 +14,7 @@ This rate limiter:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 🐳 Run with Docker (Recommended)
 
