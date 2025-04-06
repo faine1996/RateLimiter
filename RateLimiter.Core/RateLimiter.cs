@@ -28,32 +28,43 @@ namespace RateLimiter.Core
 
         public async Task<TResult> PerformAsync(TArg argument)
         {
-            await _semaphore.WaitAsync(); // get access to the coffee shop, only one person at a time. Only one customer (thread) can talk to the barista at a time. Wait your turn.
+            TimeSpan timeToWait;
+
+            // ask the doorman how long you need to wait before entering the coffee shop
+            await _semaphore.WaitAsync(); // Only one customer can talk to the doorman at a time
             try
             {
-                // wait politely before ordering coffee
-                // if you’ve had too many coffees recently, you wait before ordering but you don’t freeze the entire shop — you wait asynchronously
-                TimeSpan timeToWait = GetMaxWaitTime();
+                timeToWait = GetMaxWaitTime(); //how long do you have to wait before you can have another coffee?
+            }
+            finally
+            {
+                _semaphore.Release(); //let others check their wait time
+            }
 
-                if (timeToWait > TimeSpan.Zero)
-                {
-                    await Task.Delay(timeToWait); 
-                }
+            // wait outside the shop (if needed) — but don’t block others from asking about their wait time
+            if (timeToWait > TimeSpan.Zero)
+            {
+                await Task.Delay(timeToWait); //wait politely in line without freezing the entire shop
+            }
 
-                // log your new coffee time
+            // come back, tell the doorman you’re ready to order, and log your new coffee order
+            await _semaphore.WaitAsync(); // enter the shop again to talk to the barista
+            try
+            {
                 foreach (var rateLimit in _rateLimits)
                 {
-                    rateLimit.RecordExecution(); 
+                    rateLimit.RecordExecution(); //record that you’ve had another coffee at this time
                 }
 
-                // execute the function (Actually get the coffee)
+                //actually get your coffee (running the 'get coffee' function)
                 return await _function(argument);
             }
             finally
             {
-                _semaphore.Release(); // Leave the coffee shop
+                _semaphore.Release(); // leave the coffee shop so others can come in
             }
         }
+
 
         private TimeSpan GetMaxWaitTime()
         {

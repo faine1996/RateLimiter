@@ -11,37 +11,47 @@ namespace RateLimiter.Demo
         {
             Console.WriteLine("RateLimiter Demo");
 
-            //In this shop, each person can only have:10 coffees per second,100 coffees per minute,1000 per day.
+            // in this coffee shop, each customer can only have:
+            // - 100 coffees per second
+            // - 200 coffees per minute
+
             var rateLimits = new List<RateLimit>
             {
-                new RateLimit(10, TimeSpan.FromSeconds(1)),
-                new RateLimit(100, TimeSpan.FromMinutes(1)),
-                new RateLimit(1000, TimeSpan.FromDays(1))
+                new RateLimit(100, TimeSpan.FromSeconds(1)),
+                new RateLimit(200, TimeSpan.FromMinutes(1)),
             };
 
-            // This is a barista: they take an order (message), spend 100ms making the drink, then say “Here’s the coffee!"
+
+            // this is the barista: they take an order (message), spend 100ms making the drink, and return a friendly message
             Func<string, Task<string>> apiCall = async message =>
             {
-                await Task.Delay(100); // Simulate work
+                await Task.Delay(100); // simulate coffee preparation time
                 Console.WriteLine($"API call executed: {message} at {DateTime.Now:HH:mm:ss.fff}");
                 return $"Response for: {message}";
             };
 
-
-            // Rate-limiting doorman at the barista’s counter. No customer is allowed to order unless they respect the rules. If they’ve had too many drinks recently, the doorman tells them to wait before ordering again.
+            // the RateLimiter method is our doorman. He ensures no customer breaks the coffee shop rules.
             var rateLimiter = new Core.RateLimiter<string, string>(apiCall, rateLimits);
 
-            // Test with rapid calls
             Console.WriteLine("Making rapid calls to test rate limiting...");
+
             var tasks = new List<Task>();
-            // 20 customers all at once. Doorman checks if they are under the max coffees they allowed and if not makes them wait the specified time
-            for (int i = 0; i < 20; i++)     
+            int totalRequests = 100;
+
+            // 100 customers rush in at once to stress test the RateLimiter.
+            // and waits outside if they’ve had too many coffees recently.
+            for (int i = 0; i < totalRequests; i++)
             {
                 int callNumber = i + 1;
                 tasks.Add(Task.Run(async () =>
                 {
+                    var start = DateTime.UtcNow;
+                    Console.WriteLine($"{start:HH:mm:ss.fff} - Starting Call {callNumber}");
+
                     string result = await rateLimiter.PerformAsync($"Call {callNumber}");
-                    Console.WriteLine($"Received: {result}");
+
+                    var end = DateTime.UtcNow;
+                    Console.WriteLine($"{end:HH:mm:ss.fff} - Received: {result} (Took {(end - start).TotalMilliseconds} ms)");
                 }));
             }
 

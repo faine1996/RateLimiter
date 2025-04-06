@@ -1,6 +1,6 @@
 # RateLimiter (C# + Docker)
 
-A custom, thread-safe rate limiter implemented in C# using the **sliding window** algorithm. It supports **multiple simultaneous rate limits** (e.g., 10/sec, 100/min, 1000/day) and guarantees all limits are honored — even when accessed from multiple threads.
+A custom, thread-safe rate limiter implemented in C# using the **sliding window** algorithm. It supports **multiple simultaneous rate limits** (e.g., 100/sec, 200/min) and guarantees all limits are honored — even when accessed from multiple threads.
 
 ---
 

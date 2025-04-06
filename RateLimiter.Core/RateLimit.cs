@@ -21,24 +21,28 @@ namespace RateLimiter.Core
         {
             lock (_executionTimes)
             {
-                // remove coffees that happened outside of the current time limit
+                // remove expired coffees ie people that have waited long enough so their times are not in the queue anymore
                 RemoveExpiredTimestamps();
 
-                // if we haven't reached the limit, no need to wait. if you havent had your maximum amount of coffees then you can have more
+                // if you haven’t had too many coffees yet you can have another
                 if (_executionTimes.Count < _maxOperations)
                 {
-                    return TimeSpan.Zero; //If we are below the limit of maximum number of coffees no need to wait we can have another one yay
+                    Console.WriteLine($"Allowed: {_executionTimes.Count}/{_maxOperations} coffees in the last {_timeWindow.TotalSeconds}s");
+                    return TimeSpan.Zero;
                 }
 
-                // I’ve already had the max number of coffees. when will the oldest one no longer count so I can have another?
+                // you’ve hit your coffee per time limit lets figure out how long you have to wait
                 DateTime oldestTimestamp = _executionTimes.Peek();
                 DateTime earliestTimeForNextOperation = oldestTimestamp.Add(_timeWindow);
                 TimeSpan timeToWait = earliestTimeForNextOperation - DateTime.UtcNow;
 
+                Console.WriteLine($"Waiting: {_executionTimes.Count}/{_maxOperations} coffees in the last {_timeWindow.TotalSeconds}s → wait {Math.Max(timeToWait.TotalMilliseconds, 0):F0}ms");
+
                 return timeToWait > TimeSpan.Zero ? timeToWait : TimeSpan.Zero;
-                // the difference here is that you dont remove the oldest coffee you had just check when you can have the next its the helper function that removes the greater than timeframe coffees
             }
         }
+
+
 
         // records a new coffee you just had
         public void RecordExecution()
