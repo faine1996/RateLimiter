@@ -27,12 +27,12 @@ this rate limiter:
 git clone https://github.com/faine1996/RateLimiter.git
 cd RateLimiter
 ```
-```bash
 # build the container
+```bash
 docker build -t ratelimiter-demo .
 ```
-```bash
 # run with default limits (20/sec, 1000/min)
+```bash
 docker run --rm -e LIMIT_PER_SECOND=20 -e LIMIT_PER_MINUTE=1000 ratelimiter-demo
 ```
 
