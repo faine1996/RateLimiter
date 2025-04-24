@@ -19,7 +19,7 @@ this rate limiter:
 
 ---
 
-## run tests with docker (recommended)
+## run tests with docker
 
 **requirements**: docker desktop (windows/mac) or docker engine (linux)
 
@@ -48,7 +48,7 @@ you can control the rate limits via env variables:
 docker run -e LIMIT_PER_SECOND=10 -e LIMIT_PER_MINUTE=500 ratelimiter-demo
 ```
 
-#future ideas
+# future ideas
 
 -observability metrics (queue size, wait times)
 
