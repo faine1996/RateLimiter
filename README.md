@@ -36,11 +36,11 @@ docker build -t ratelimiter-demo .
 docker run --rm -e LIMIT_PER_SECOND=20 -e LIMIT_PER_MINUTE=1000 ratelimiter-demo
 ```
 
-why sliding window?
+# why sliding window?
 sliding windows give more accurate rate enforcement compared to fixed windows — especially for bursty or high-throughput systems.
 they count actions in real-time rather than batching by whole seconds or minutes.
 
-customization
+# customization
 you can control the rate limits via env variables:
 
 ```bash
@@ -48,10 +48,10 @@ you can control the rate limits via env variables:
 docker run -e LIMIT_PER_SECOND=10 -e LIMIT_PER_MINUTE=500 ratelimiter-demo
 ```
 
-future ideas
+#future ideas
 
-observability metrics (queue size, wait times)
+-observability metrics (queue size, wait times)
 
-backpressure support (reject or throttle under extreme load)
+-backpressure support (reject or throttle under extreme load)
 
-dynamic config via api
+-dynamic config via api
