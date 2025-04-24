@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.vscode/
+*.user
+*.suo
+*.dll
+*.exe
+*.pdb
+*.db
+Dockerfile
