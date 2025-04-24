@@ -1,20 +1,21 @@
-a thread-safe, async rate limiter in c# using the sliding window algorithm — ready to handle high-concurrency and custom limits.
 
-##project overview
+# A thread-safe, async rate limiter in c# using the sliding window algorithm — ready to handle high-concurrency and custom limits.
+
+## Project overview
 
 this rate limiter:
 
-- accepts a user-defined function (like an api call)
-- wraps it with one or more sliding window rate limits
-- delays execution when needed to respect all defined limits
-- is fully async, thread-safe, and dockerized
+- accepts a user-defined function (like an api call)  
+- wraps it with one or more sliding window rate limits  
+- delays execution when needed to respect all defined limits  
+- is fully async, thread-safe, and dockerized  
 
 ## features
 
-- supports multiple concurrent rate limits (e.g. 100/sec and 1000/min)
-- preserves strict fifo (first-in-first-out) request ordering
-- optimized for performance: the limiter doesn’t block while executing user actions
-- docker-compatible for consistent test execution and deployment
+- supports multiple concurrent rate limits (e.g. 100/sec and 1000/min)  
+- preserves strict fifo (first-in-first-out) request ordering  
+- optimized for performance: the limiter doesn’t block while executing user actions  
+- docker-compatible for consistent test execution and deployment  
 
 ---
 
@@ -34,17 +35,19 @@ docker run --rm -e LIMIT_PER_SECOND=20 -e LIMIT_PER_MINUTE=1000 ratelimiter-demo
 
 
 why sliding window?
-sliding windows give more accurate rate enforcement compared to fixed windows — especially for bursty or high-throughput systems. they count actions in real-time rather than batching by whole seconds or minutes.
+sliding windows give more accurate rate enforcement compared to fixed windows — especially for bursty or high-throughput systems.
+they count actions in real-time rather than batching by whole seconds or minutes.
 
 customization
 you can control the rate limits via env variables:
 
-bash
-Copy
-Edit
+```bash
+
 docker run -e LIMIT_PER_SECOND=10 -e LIMIT_PER_MINUTE=500 ratelimiter-demo
 
+
 future ideas
+
 observability metrics (queue size, wait times)
 
 backpressure support (reject or throttle under extreme load)
