@@ -1,32 +1,52 @@
-# RateLimiter (C# + Docker)
+a thread-safe, async rate limiter in c# using the sliding window algorithm — ready to handle high-concurrency and custom limits.
 
-A custom, thread-safe rate limiter implemented in C# using the **sliding window** algorithm. It supports **multiple simultaneous rate limits** (e.g., 100/sec, 200/min) and guarantees all limits are honored — even when accessed from multiple threads.
+##project overview
+
+this rate limiter:
+
+- accepts a user-defined function (like an api call)
+- wraps it with one or more sliding window rate limits
+- delays execution when needed to respect all defined limits
+- is fully async, thread-safe, and dockerized
+
+## features
+
+- supports multiple concurrent rate limits (e.g. 100/sec and 1000/min)
+- preserves strict fifo (first-in-first-out) request ordering
+- optimized for performance: the limiter doesn’t block while executing user actions
+- docker-compatible for consistent test execution and deployment
 
 ---
 
-## Project Overview
+## run tests with docker (recommended)
 
-This rate limiter:
-- Accepts a user-provided function (e.g., an API call).
-- Wraps it with one or more sliding window rate limits.
-- Delays execution when needed to ensure **no limit is exceeded**.
-- Is **fully async**, **thread-safe**, and **Dockerized**.
-
----
-
-## Getting Started
-
-### Run with Docker (Recommended)
-
-> Requires Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+**requirements**: docker desktop (windows/mac) or docker engine (linux)
 
 ```bash
 git clone https://github.com/faine1996/RateLimiter.git
 cd RateLimiter
 
+# build the container
 docker build -t ratelimiter-demo .
 
-docker run --rm ratelimiter-demo
+# run with default limits (20/sec, 1000/min)
+docker run --rm -e LIMIT_PER_SECOND=20 -e LIMIT_PER_MINUTE=1000 ratelimiter-demo
 
-dotnet run --project RateLimiter.Demo
 
+why sliding window?
+sliding windows give more accurate rate enforcement compared to fixed windows — especially for bursty or high-throughput systems. they count actions in real-time rather than batching by whole seconds or minutes.
+
+customization
+you can control the rate limits via env variables:
+
+bash
+Copy
+Edit
+docker run -e LIMIT_PER_SECOND=10 -e LIMIT_PER_MINUTE=500 ratelimiter-demo
+
+future ideas
+observability metrics (queue size, wait times)
+
+backpressure support (reject or throttle under extreme load)
+
+dynamic config via api

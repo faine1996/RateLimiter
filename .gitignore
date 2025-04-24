@@ -1,0 +1,25 @@
+# build artifacts
+bin/
+obj/
+*.exe
+*.dll
+
+# user and IDE config
+.vs/
+*.user
+*.suo
+
+# test results
+TestResults/
+*.trx
+
+# logs
+*.log
+
+# system files
+.DS_Store
+Thumbs.db
+
+# docker stuff
+Dockerfile*
+.dockerignore
